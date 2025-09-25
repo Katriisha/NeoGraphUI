@@ -1,4 +1,4 @@
-# NeoGRaphUI
+# NeoGraphUI
 
 
 ## Mac install
