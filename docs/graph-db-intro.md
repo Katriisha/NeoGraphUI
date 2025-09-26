@@ -130,3 +130,57 @@ Alice["label ---> :Human
     hasAge=25"]
 end
 ```
+### Cypher Query Language
+
+Cypher is the declarative graph query language designed specifically for Neo4j and the LPG model.  
+Its syntax is intentionally human-readable and inspired by ASCII-art graphs, making it intuitive to express graph patterns.  
+
+The key idea: in Cypher you describe *what* graph structure you are looking for, not *how* to traverse it.  
+Neo4j then figures out the efficient way to execute the query.  
+
+#### Example Queries
+
+Let's start from our Alice–Bob example.
+
+**Create nodes and relationship**
+
+```cypher
+CREATE (a:Human {hasName: 'Alice', hasAge: 30}),
+       (b:Human {hasName: 'Bob', hasAge: 25}),
+       (a)-[:KNOWS {since: 2020}]->(b);
+```
+
+Here:
+
+- (a:Human {...}) creates a node with label Human and two properties: Name and Age, whare a is a node variable and Human is a label
+
+- (a)-[:KNOWS {since: 2020}]->(b) creates a directed relationship between (a) and (b) nodes with type of relationship -  KNOWS and its properties - {since: 2020}.
+
+**Match pattern**
+
+```cypher
+MATCH (a:Human {hasName: 'Alice'})-[:KNOWS]->(b)
+RETURN b.hasName, b.hasAge;
+```
+
+This query finds all humans known by Alice and returns their names and ages. In our case it is Bob who is 25 years old.
+
+**Query with relationship properties**
+
+```cypher
+MATCH (a:Human {hasName: 'Alice'})-[r:KNOWS]->(b:Human)
+WHERE r.since < 2021
+RETURN a.hasName, b.hasName, r.since;
+```
+
+Here, we are filtering by relationship property (since) in addition to node properties. So this query finds all humans Alice knew before 2021.
+
+
+There are many other things we can do with LPG using the Cypher language, such as:  
+
+- Adding constraints on node **uniqueness** with a specific property.  
+- Querying nodes based on the **type of relationship**.  
+- Finding nodes at a **specific distance** from a given node.  
+- Finding the **shortest path** between two nodes.  
+
+For more information, you can refer to the [official Neo4j Cypher documentation](https://neo4j.com/docs/cypher-manual/current/).
