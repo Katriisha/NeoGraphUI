@@ -184,3 +184,54 @@ There are many other things we can do with LPG using the Cypher language, such a
 - Finding the **shortest path** between two nodes.  
 
 For more information, you can refer to the [official Neo4j Cypher documentation](https://neo4j.com/docs/cypher-manual/current/).
+
+## SPARQL Query Language
+
+**SPARQL** is the query language for **RDF graphs**. The main idea: in SPARQL you describe **patterns of triples** (subject–predicate–object) that you want to match in the RDF graph.  
+The query processor then returns all the matches.
+
+### Example Queries
+
+**Select humans and their names**
+
+```sparql
+PREFIX ex: <http://example.com/simple-example#>
+
+SELECT ?person ?name
+WHERE {
+  ?person ex:is ex:Human .
+  ?person ex:hasName ?name .
+}
+```
+
+Here:
+
+?person and ?name are variables.
+
+The WHERE block specifies the graph patterns to match.
+
+The result will be two rows: one for Alice, one for Bob.
+
+**Select with conditions**
+s
+```sparql
+PREFIX ex: <http://example.com/simple-example#>
+
+SELECT ?person ?name ?age
+WHERE {
+  ?person ex:is ex:Human .
+  ?person ex:hasName ?name .
+  ?person ex:hasAge ?age .
+  FILTER (?age < 30)
+}
+```
+
+This query finds all humans younger than 30.
+In our case, it will return only Bob.
+
+For more information, you can refer to the [official SPARQL documentation](https://www.w3.org/TR/sparql11-query/).
+
+### When to use Cypher vs SPARQL
+
+- **Choose Cypher (LPG)** when your priority is **performance, developer experience, and property-rich data**.  
+- **Choose SPARQL (RDF)** when your priority is **interoperability, standards compliance, and linking data on the web**.  
