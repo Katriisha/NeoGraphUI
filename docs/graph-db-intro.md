@@ -7,8 +7,9 @@ According to RDF documents RDF graphs are 'sets of subject-predicate-object trip
 
 We will talk more about URIs, datatype literals and blank nodes below. For now let us understand how to build graph using set of triples.
 
-### graph as set of triples
+### graph as set of triples - two examples
 
+#### Alice-Bob
 Consider this set of triples present by CSV file given below. It has three columns. In RDF terms first column is subject, then goes predicate and object columns.
 
 ```
@@ -38,9 +39,62 @@ A -->|knows| B
 RDF graphs are constructed exactly this way. Each RDF triple is to specify two nodes connected by link. Link - or predicate - is directed from subject node to object node.
 Note that such graph construction is alternative to construction which often defined as sets of vertices and edges. In the case of RDF the graph is defined using only one set of triples.
 
+#### Drug-for-diabetes
+
+This is example of KG from https://arxiv.org/pdf/2510.09580 page 5 Fig 1. It is reporduced below:
+
+```mermaid
+graph TB
+:Melformin -->|:TREATS| :Type_2_Diabetes
+:Melformin -->|:ACTIVATES| :AMPK
+:AMPK -->|:INHIBITS| :Increased_hepatic_Gluconeogenesis
+:Type_2_Diabetes -->|:ASSOTIATED_WITH| :Increased_hepatic_Gluconeogenesis
+:Increased_hepatic_Gluconeogenesis -->|:ASSOTIATED_WITH| :Type_2_Diabetes
+:Type_2_Diabetes -->|:ASSOTIATED_WITH| :Chronic_Kidney_Disease
+:Chronic_Kidney_Disease -->|:ASSOTIATED_WITH| :Type_2_Diabetes
+```
+
+Triples as they are on the figure:
+```
+@prefix : <https://example.com/#> .
+
+:Melformin :TREATS :Type_2_Diabetes .
+:Melformin :ACTIVATES :AMPK .
+:AMPK :INHIBITS :Increased_hepatic_Gluconeogenesis .
+:Type_2_Diabetes :ASSOTIATED_WITH :Increased_hepatic_Gluconeogenesis .
+:Increased_hepatic_Gluconeogenesis :ASSOTIATED_WITH :Type_2_Diabetes .
+:Type_2_Diabetes :ASSOTIATED_WITH :Chronic_Kidney_Disease .
+:Chronic_Kidney_Disease :ASSOTIATED_WITH :Type_2_Diabetes .
+```
+
+Improved triple set is below. It supplies type information using rdf:type predicate. Types (or classes) themselves are described using RDFS predicate rdfs:Class.
+
+```
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix : <https://example.com/#> .
+
+:Drug rdf:type rdfs:Class .
+:Decease rdf:type rdfs:Class .
+:Protein rdf:type rdfs:Class .
+:Melformin rdf:type :Drug .
+:Type_2_Diabetes rdf:type :Decease .
+:AMPK rdf:type :Protein .
+:AMPK rdfs:seeAlso <https://www.uniprot.org/uniprotkb?query=AMPK> .
+:Chronic_Kidney_Disease rdf:type :Decease .
+:Melformin :TREATS :Type_2_Diabetes .
+:Melformin :ACTIVATES :AMPK .
+:AMPK :INHIBITS :Increased_hepatic_Gluconeogenesis .
+:Type_2_Diabetes :ASSOTIATED_WITH :Increased_hepatic_Gluconeogenesis .
+:Increased_hepatic_Gluconeogenesis :ASSOTIATED_WITH :Type_2_Diabetes .
+:Type_2_Diabetes :ASSOTIATED_WITH :Chronic_Kidney_Disease .
+:Chronic_Kidney_Disease :ASSOTIATED_WITH :Type_2_Diabetes .
+```
+
 ### Turtle - Terse RDF Triple Language
 
-Now let's see how to define real RDF graph. The defitions and picture above are not RDF graphs - because the way how triples are written is not compliant with RDF restrictions.
+Now let's see how to define real RDF graph. Alice-Bob example's defitions and picture above are not RDF graphs - because the way how triples are written is not compliant with RDF restrictions. Drug-for-diabetes example contains proper RDF/Turtle definitions.
+
 RDF specify what exactly nodes (subject/object) and links (predicate) could be:
 
 - subject can be only URI or blank node
@@ -52,7 +106,8 @@ URIs and datatype literals are called resources - giving Resource in RDF abbrevi
 To stay practical let's use [Turtle](https://en.wikipedia.org/wiki/Turtle_(syntax) language to define RDF graph which will show the same Alice-Bob relations as in previous section:
 
 ```
-@prefix ex: <http://example.com/simple-example#>
+@prefix ex: <http://example.com/simple-example#> .
+
 ex:A ex:is ex:Human .
 ex:A ex:hasAge 30 .
 ex:A ex:hasName "Alice" .
@@ -87,16 +142,47 @@ Turtle is actually most popular way to specify RDF graphs in various datasets, d
 So live up to the role of programming language Turtle syntax has additional feature which allow more condensed definition of set of triples. E.g example from previous section can be presented as:
 
 ```
-@prefix ex: <http://example.com/simple-example#>
+@prefix ex: <http://example.com/simple-example#> .
+
 ex:A ex:is ex:Human;
      ex:hasAge 30;
-     ex:hasName "Alice"
-     .
+     ex:hasName "Alice" .
+
 ex:B ex:is ex:Human;
      ex:hasAge 25;
-     ex:hasName "Bob"
-     .
+     ex:hasName "Bob" .
+
 ex:A ex:knows ex:B .
+```
+
+Drug-for-diabetes example using a bit more advanced turtle syntax:
+
+```
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix : <https://example.com/#> .
+
+:Drug rdf:type rdfs:Class . 
+:Decease rdf:type rdfs:Class .
+:Protein rdf:type rdfs:Class .
+
+:Melformin rdf:type :Drug;
+      :TREATS :Type_2_Diabetes;
+      :ACTIVATES :AMPK .
+
+:Type_2_Diabetes rdf:type :Decease;
+       :ASSOTIATED_WITH :Increased_hepatic_Gluconeogenesis;
+       :ASSOTIATED_WITH :Chronic_Kidney_Disease .
+
+:AMPK rdf:type :Protein;
+      :INHIBITS :Increased_hepatic_Gluconeogenesis;
+      rdfs:seeAlso <https://www.uniprot.org/uniprotkb?query=AMPK> .
+
+:Chronic_Kidney_Disease rdf:type :Decease;
+         :ASSOTIATED_WITH :Type_2_Diabetes .
+
+:Increased_hepatic_Gluconeogenesis :ASSOTIATED_WITH :Type_2_Diabetes .
+
 ```
 
 ## LPG
@@ -213,7 +299,7 @@ The WHERE block specifies the graph patterns to match.
 The result will be two rows: one for Alice, one for Bob.
 
 **Select with conditions**
-s
+
 ```sparql
 PREFIX ex: <http://example.com/simple-example#>
 
