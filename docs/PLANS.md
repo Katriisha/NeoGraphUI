@@ -15,8 +15,8 @@ Main goal is to build tool for graph database users keeping in mind neuro-symbol
 both data types/objects, logic rules defined using that data types, reasoning/interpretation details.
 
 To define data types in graph database we are to use SHACL-based approach. To continue with logic rules we may need to adapt OWL 
-and posibly Prolog. Neuro-symbolic users would require additional features to visualize particular methodology parameters. 
+and possibly Prolog. Neuro-symbolic users would require additional features to visualize particular methodology parameters. 
 E.g soft probabilistic logic would have certain probabilties/ranges associated with logic rules.
 
-See this video for some additional details: https://www.youtube.com/watch?v=q3s72VhaQR0
+See this video for some additional details: https://www.youtube.com/watch?v=q3s72VhaQR0 - 'Neuro-Symbolic AI with AllegroGraph'
 
